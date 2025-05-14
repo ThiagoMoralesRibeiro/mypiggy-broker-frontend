@@ -1,10 +1,15 @@
-import { Table, TableBody, TableHead, TableHeadCell } from "flowbite-react";
-import { WalletList } from "../components/WalletList";
-import { getMyWallet } from "../queries/queries";
-import { AssetSync } from "../components/AssetSync";
-import { TableWalletAssetRow } from "./TableWalletAssetRow";
+import {
+  Table,
+  TableBody,
+  TableHead,
+  TableHeadCell,
+} from "flowbite-react";
+import { WalletList } from "../../components/WalletList";
+import { getAssets, getMyWallet } from "../../queries/queries";
+import { AssetSync } from "../../components/AssetSync";
+import { TableAssetRow } from "./TableAssetRow";
 
-export default async function MyWalletListPage({
+export default async function AssetsListPage({
   searchParams,
 }: {
   searchParams: Promise<{ walletId: string }>;
@@ -21,35 +26,28 @@ export default async function MyWalletListPage({
     return <WalletList />;
   }
 
+  const assets = await getAssets();
+
   return (
     <div className="flex flex-col space-y-5 flex-grow">
       <article className="format">
-        <h1>Minha carteira</h1>
+        <h1>Ativos</h1>
       </article>
       <div className="overflow-x-auto w-full">
         <Table className="w-full max-w-full table-fixed">
           <TableHead>
             <TableHeadCell>Ativo</TableHeadCell>
             <TableHeadCell>Cotação</TableHeadCell>
-            <TableHeadCell>Quantidade</TableHeadCell>
             <TableHeadCell>Comprar/vender</TableHeadCell>
           </TableHead>
           <TableBody>
-            {wallet.assets.map((walletAsset, key) => (
-              <TableWalletAssetRow
-                key={key}
-                walletAsset={walletAsset}
-                walletId={walletId}
-              />
+            {assets.map((asset, key) => (
+              <TableAssetRow key={key} asset={asset} walletId={walletId} />
             ))}
           </TableBody>
         </Table>
       </div>
-      <AssetSync
-        assetsSymbols={wallet.assets.map(
-          (walletAsset) => walletAsset.asset.symbol
-        )}
-      />
+      <AssetSync assetsSymbols={assets.map((asset) => asset.symbol)} />
     </div>
   );
 }
